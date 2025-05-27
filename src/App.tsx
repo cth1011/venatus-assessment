@@ -6,6 +6,7 @@ import {
   type FeedbackFormData,
 } from "@/components/feedback-form";
 import StarRating from "@/components/star-rating";
+import { useCallback, useMemo, useState } from "react";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { ArrowDownUp, X } from "lucide-react";
 import { Category } from "@/types/feedback";
@@ -136,11 +137,12 @@ function App() {
         <h1 className="text-2xl font-bold">Product Feedback Board</h1>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="w-full rounded-full sm:w-auto">
+            <Button
+              variant="outline"
+              className="w-full rounded-[5px] md:rounded-full sm:w-auto"
+            >
               Sort by: {sortBy.charAt(0).toUpperCase() + sortBy.slice(1)}
-              <span className="ml-2">
-                <ArrowDownUp />
-              </span>
+              <ArrowDownUp className="h-4 w-4 ml-2" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent
@@ -179,7 +181,7 @@ function App() {
               + New Feedback
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-md rounded-full text-gray-700 bg-white">
+          <DialogContent className="sm:max-w-md md:rounded-[5px] text-gray-700 bg-white">
             <DialogHeader>
               <DialogTitle className="text-xl">Add New Feedback</DialogTitle>
               <DialogDescription>

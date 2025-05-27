@@ -18,7 +18,7 @@ const StarRating: React.FC<StarRatingProps> = ({ value, onChange }) => {
           onClick={() => onChange(star)}
           onMouseEnter={() => setHoveredStar(star)}
           onMouseLeave={() => setHoveredStar(null)}
-          className={`text-2xl transition-colors duration-[5s] ease-in-out ${
+          className={`text-2xl transition-colors duration-150 ease-in-out ${
             star <= displayValue
               ? "text-yellow-500"
               : "text-gray-300 hover:text-yellow-300"
