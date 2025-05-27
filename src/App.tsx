@@ -1,7 +1,7 @@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import StarRating from "@/components/star-rating";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Category } from "@/types/feedback";
 
 interface FeedbackProps {
@@ -35,6 +35,7 @@ const initialFeedback: FeedbackProps[] = [
 
 function App() {
   const [feedbacks, setFeedbacks] = useState<FeedbackProps[]>(initialFeedback);
+  const [searchTerm, setSearchTerm] = useState("");
   const handleRatingUpdate = useCallback(
     (feedbackId: number, newRating: number) => {
       setFeedbacks((prevFeedbacks) =>
@@ -46,6 +47,24 @@ function App() {
     []
   );
 
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(event.target.value);
+  };
+
+  const displayedFeedbacks = useMemo(() => {
+    let filtered = [...feedbacks];
+
+    if (searchTerm.trim() !== "") {
+      const lowerSearchTerm = searchTerm.toLowerCase();
+      filtered = filtered.filter(
+        (fb) =>
+          fb.title.toLowerCase().includes(lowerSearchTerm) ||
+          fb.description.toLowerCase().includes(lowerSearchTerm)
+      );
+    }
+
+    return filtered;
+  }, [feedbacks, searchTerm]);
   return (
     <div className="max-w-3xl mx-auto p-4">
       <header className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
@@ -56,13 +75,16 @@ function App() {
           type="text"
           placeholder="Search feedback..."
           className="flex-1 w-full sm:w-64 px-4 py-2 border border-gray-300 rounded"
+          value={searchTerm}
+          onChange={handleSearchChange}
+          aria-label="Search feedback"
         />
         <Button className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
           + New Feedback
         </Button>
       </div>
       <ul className="space-y-4">
-        {feedbacks.map((fb) => (
+        {displayedFeedbacks.map((fb) => (
           <li key={fb.id} className="bg-white p-4 rounded shadow">
             <div className="flex justify-between items-start">
               <div>
