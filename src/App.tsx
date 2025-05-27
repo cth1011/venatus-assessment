@@ -135,18 +135,21 @@ function App() {
           </DialogContent>
         </Dialog>
       </div>
-      <div className="h-[50px] flex items-center gap-2">
+      <div className="h-[25px] flex items-center gap-2">
         {selectedCategory && (
           <span className="text-sm text-white">
-            Filtering by category:{" "}
-            <Button className=" rounded-full" onClick={clearCategoryFilter}>
+            <Button
+              size="sm"
+              className="rounded-full"
+              onClick={clearCategoryFilter}
+            >
               {selectedCategory}
               <X />
             </Button>
           </span>
         )}
       </div>
-      <ul className="space-y-4 pt-2">
+      <ul className="space-y-4 pt-4">
         {displayedFeedbacks.map((fb) => (
           <li key={fb.id} className="bg-white p-4 rounded shadow">
             <div className="flex justify-between items-start">
