@@ -210,12 +210,12 @@ function App() {
       <ul ref={feedbackListRef} className="space-y-4 pt-4">
         {displayedFeedbacks.map((fb) => (
           <li key={fb.id} className="bg-white p-4 rounded shadow">
-            <div className="flex justify-between items-start">
+              <div className="md:flex justify-between items-start">
               <div>
                 <h2 className="text-lg text-gray-600 font-semibold">
                   {fb.title}
                 </h2>
-                <p className="text-sm text-gray-600">{fb.description}</p>
+                  <p className="pb-2 text-sm text-gray-600">{fb.description}</p>
                 <Badge
                   className="cursor-pointer"
                   onClick={() => handleCategoryFilter(fb.category)}
@@ -224,7 +224,7 @@ function App() {
                   {fb.category}
                 </Badge>
               </div>
-              <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1 pt-2">
                 <StarRating
                   value={fb.rating}
                   onChange={(rating) => handleRatingUpdate(fb.id, rating)}
