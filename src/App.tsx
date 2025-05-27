@@ -1,6 +1,19 @@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-const initialFeedback = [
+import StarRating from "@/components/star-rating";
+import { useCallback, useState } from "react";
+import { Category } from "@/types/feedback";
+
+interface FeedbackProps {
+  id: number;
+  title: string;
+  description: string;
+  category: Category;
+  rating: number;
+  created_at: number;
+}
+
+const initialFeedback: FeedbackProps[] = [
   {
     id: 1,
     title: "Add dark mode",
@@ -21,6 +34,18 @@ const initialFeedback = [
 ];
 
 function App() {
+  const [feedbacks, setFeedbacks] = useState<FeedbackProps[]>(initialFeedback);
+  const handleRatingUpdate = useCallback(
+    (feedbackId: number, newRating: number) => {
+      setFeedbacks((prevFeedbacks) =>
+        prevFeedbacks.map((fb) =>
+          fb.id === feedbackId ? { ...fb, rating: newRating } : fb
+        )
+      );
+    },
+    []
+  );
+
   return (
     <div className="max-w-3xl mx-auto p-4">
       <header className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
@@ -37,7 +62,7 @@ function App() {
         </Button>
       </div>
       <ul className="space-y-4">
-        {initialFeedback.map((fb) => (
+        {feedbacks.map((fb) => (
           <li key={fb.id} className="bg-white p-4 rounded shadow">
             <div className="flex justify-between items-start">
               <div>
@@ -50,16 +75,10 @@ function App() {
                 </span>
               </div>
               <div className="flex items-center gap-1">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <button
-                    key={star}
-                    className={`text-yellow-500 ${
-                      star <= fb.rating ? "opacity-100" : "opacity-30"
-                    }`}
-                  >
-                    ★
-                  </button>
-                ))}
+                <StarRating
+                  value={fb.rating}
+                  onChange={(rating) => handleRatingUpdate(fb.id, rating)}
+                />
               </div>
             </div>
           </li>
