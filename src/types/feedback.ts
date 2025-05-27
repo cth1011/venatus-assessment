@@ -1,1 +1,1 @@
-export type Category = "UX" | "UI" | "Feature";
+export type Category = "UX" | "UI" | "Feature" | null;

@@ -1,7 +1,9 @@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import StarRating from "@/components/star-rating";
 import { useCallback, useMemo, useState } from "react";
+import { X } from "lucide-react";
 import { Category } from "@/types/feedback";
 
 interface FeedbackProps {
@@ -36,6 +38,7 @@ const initialFeedback: FeedbackProps[] = [
 function App() {
   const [feedbacks, setFeedbacks] = useState<FeedbackProps[]>(initialFeedback);
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<Category>(null);
   const handleRatingUpdate = useCallback(
     (feedbackId: number, newRating: number) => {
       setFeedbacks((prevFeedbacks) =>
@@ -51,6 +54,14 @@ function App() {
     setSearchTerm(event.target.value);
   };
 
+  const handleCategoryFilter = (category: Category) => {
+    setSelectedCategory((prev) => (prev === category ? null : category));
+  };
+
+  const clearCategoryFilter = () => {
+    setSelectedCategory(null);
+  };
+
   const displayedFeedbacks = useMemo(() => {
     let filtered = [...feedbacks];
 
@@ -63,8 +74,11 @@ function App() {
       );
     }
 
+    if (selectedCategory) {
+      filtered = filtered.filter((fb) => fb.category === selectedCategory);
+    }
     return filtered;
-  }, [feedbacks, searchTerm]);
+  }, [feedbacks, searchTerm, selectedCategory]);
   return (
     <div className="max-w-3xl mx-auto p-4">
       <header className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
@@ -83,7 +97,18 @@ function App() {
           + New Feedback
         </Button>
       </div>
-      <ul className="space-y-4">
+      <div className="h-[50px] flex items-center gap-2">
+        {selectedCategory && (
+          <span className="text-sm text-white">
+            Filtering by category:{" "}
+            <Button className=" rounded-full" onClick={clearCategoryFilter}>
+              {selectedCategory}
+              <X />
+            </Button>
+          </span>
+        )}
+      </div>
+      <ul className="space-y-4 pt-2">
         {displayedFeedbacks.map((fb) => (
           <li key={fb.id} className="bg-white p-4 rounded shadow">
             <div className="flex justify-between items-start">
@@ -92,9 +117,13 @@ function App() {
                   {fb.title}
                 </h2>
                 <p className="text-sm text-gray-600">{fb.description}</p>
-                <span className="inline-block mt-2 text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">
+                <Badge
+                  className="cursor-pointer"
+                  onClick={() => handleCategoryFilter(fb.category)}
+                  role="button"
+                >
                   {fb.category}
-                </span>
+                </Badge>
               </div>
               <div className="flex items-center gap-1">
                 <StarRating
