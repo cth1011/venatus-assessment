@@ -6,7 +6,7 @@ import {
   type FeedbackFormData,
 } from "@/components/feedback-form";
 import StarRating from "@/components/star-rating";
-import { useCallback, useMemo, useState } from "react";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { ArrowDownUp, X } from "lucide-react";
 import { Category } from "@/types/feedback";
 
@@ -63,6 +63,10 @@ function App() {
   const [selectedCategory, setSelectedCategory] = useState<Category>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [sortBy, setSortBy] = useState<"date" | "rating">("date");
+
+  const [feedbackListRef] = useAutoAnimate<HTMLUListElement>();
+  const [categoryFilterRef] = useAutoAnimate<HTMLDivElement>();
+
   const handleRatingUpdate = useCallback(
     (feedbackId: number, newRating: number) => {
       setFeedbacks((prevFeedbacks) =>
@@ -89,7 +93,7 @@ function App() {
         feedbacks.length > 0 ? Math.max(...feedbacks.map((f) => f.id)) + 1 : 1,
       created_at: Date.now(),
     };
-    setFeedbacks((prevFeedbacks) => [...prevFeedbacks, newFeedback]);
+    setFeedbacks((prevFeedbacks) => [newFeedback, ...prevFeedbacks]);
     setIsModalOpen(false);
   };
 
@@ -127,7 +131,7 @@ function App() {
   }, [feedbacks, searchTerm, selectedCategory, sortBy]);
 
   return (
-    <div className="max-w-3xl mx-auto p-4">
+    <div className="max-w-3xl mx-auto p-4 antialiased">
       <header className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
         <h1 className="text-2xl font-bold">Product Feedback Board</h1>
         <DropdownMenu>
@@ -186,7 +190,7 @@ function App() {
           </DialogContent>
         </Dialog>
       </div>
-      <div className="h-[25px] flex items-center gap-2">
+      <div ref={categoryFilterRef} className="h-[25px] flex items-center gap-2">
         {selectedCategory && (
           <span className="text-sm text-white">
             <Button
@@ -200,7 +204,7 @@ function App() {
           </span>
         )}
       </div>
-      <ul className="space-y-4 pt-4">
+      <ul ref={feedbackListRef} className="space-y-4 pt-4">
         {displayedFeedbacks.map((fb) => (
           <li key={fb.id} className="bg-white p-4 rounded shadow">
             <div className="flex justify-between items-start">
