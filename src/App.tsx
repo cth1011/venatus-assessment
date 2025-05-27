@@ -1,10 +1,23 @@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import {
+  FeedbackForm,
+  type FeedbackFormData,
+} from "@/components/feedback-form";
 import StarRating from "@/components/star-rating";
 import { useCallback, useMemo, useState } from "react";
 import { X } from "lucide-react";
 import { Category } from "@/types/feedback";
+
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogDescription,
+} from "@/components/ui/dialog";
 
 interface FeedbackProps {
   id: number;
@@ -39,6 +52,7 @@ function App() {
   const [feedbacks, setFeedbacks] = useState<FeedbackProps[]>(initialFeedback);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<Category>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const handleRatingUpdate = useCallback(
     (feedbackId: number, newRating: number) => {
       setFeedbacks((prevFeedbacks) =>
@@ -56,6 +70,17 @@ function App() {
 
   const handleCategoryFilter = (category: Category) => {
     setSelectedCategory((prev) => (prev === category ? null : category));
+  };
+
+  const handleAddFeedback = (data: FeedbackFormData) => {
+    const newFeedback: FeedbackProps = {
+      ...data,
+      id:
+        feedbacks.length > 0 ? Math.max(...feedbacks.map((f) => f.id)) + 1 : 1,
+      created_at: Date.now(),
+    };
+    setFeedbacks((prevFeedbacks) => [...prevFeedbacks, newFeedback]);
+    setIsModalOpen(false);
   };
 
   const clearCategoryFilter = () => {
@@ -93,9 +118,22 @@ function App() {
           onChange={handleSearchChange}
           aria-label="Search feedback"
         />
-        <Button className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+          <DialogTrigger asChild>
+            <Button className=" text-white px-4 py-2 rounded">
           + New Feedback
         </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-md rounded-full text-gray-700 bg-white">
+            <DialogHeader>
+              <DialogTitle className="text-xl">Add New Feedback</DialogTitle>
+              <DialogDescription>
+                Share your thoughts to help us improve our product.
+              </DialogDescription>
+            </DialogHeader>
+            <FeedbackForm onSubmit={handleAddFeedback} />
+          </DialogContent>
+        </Dialog>
       </div>
       <div className="h-[50px] flex items-center gap-2">
         {selectedCategory && (
