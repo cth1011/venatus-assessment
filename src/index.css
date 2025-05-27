@@ -4,6 +4,8 @@
 @tailwind utilities;
 
 :root {
+    --primary: 30 100% 55%;
+    --primary-foreground: 0 0% 100%;
     font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
     color-scheme: light dark;
 }
