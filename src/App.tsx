@@ -7,7 +7,7 @@ import {
 } from "@/components/feedback-form";
 import StarRating from "@/components/star-rating";
 import { useCallback, useMemo, useState } from "react";
-import { X } from "lucide-react";
+import { ArrowDownUp, X } from "lucide-react";
 import { Category } from "@/types/feedback";
 
 import {
@@ -18,6 +18,15 @@ import {
   DialogTrigger,
   DialogDescription,
 } from "@/components/ui/dialog";
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface FeedbackProps {
   id: number;
@@ -53,6 +62,7 @@ function App() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<Category>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [sortBy, setSortBy] = useState<"date" | "rating">("date");
   const handleRatingUpdate = useCallback(
     (feedbackId: number, newRating: number) => {
       setFeedbacks((prevFeedbacks) =>
@@ -102,12 +112,53 @@ function App() {
     if (selectedCategory) {
       filtered = filtered.filter((fb) => fb.category === selectedCategory);
     }
+
+    if (sortBy === "date") {
+      filtered.sort((a, b) => b.created_at - a.created_at);
+    } else if (sortBy === "rating") {
+      filtered.sort((a, b) => {
+        if (b.rating === a.rating) {
+          return b.created_at - a.created_at;
+        }
+        return b.rating - a.rating;
+      });
+    }
     return filtered;
-  }, [feedbacks, searchTerm, selectedCategory]);
+  }, [feedbacks, searchTerm, selectedCategory, sortBy]);
+
   return (
     <div className="max-w-3xl mx-auto p-4">
       <header className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
         <h1 className="text-2xl font-bold">Product Feedback Board</h1>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" className="w-full rounded-full sm:w-auto">
+              Sort by: {sortBy.charAt(0).toUpperCase() + sortBy.slice(1)}
+              <span className="ml-2">
+                <ArrowDownUp />
+              </span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            align="end"
+            className="w-40 bg-white text-gray-700"
+          >
+            <DropdownMenuLabel>Sort Criteria</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onClick={() => setSortBy("date")}
+              className={sortBy === "date" ? "font-semibold" : ""}
+            >
+              Date {sortBy === "date" && <span className="ml-auto">✓</span>}
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => setSortBy("rating")}
+              className={sortBy === "rating" ? "font-semibold" : ""}
+            >
+              Rating {sortBy === "rating" && <span className="ml-auto">✓</span>}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </header>
       <div className="flex flex-col mb-4 sm:flex-row gap-2 sm:items-center w-full sm:w-auto">
         <Input
@@ -121,8 +172,8 @@ function App() {
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
           <DialogTrigger asChild>
             <Button className=" text-white px-4 py-2 rounded">
-          + New Feedback
-        </Button>
+              + New Feedback
+            </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-md rounded-full text-gray-700 bg-white">
             <DialogHeader>
